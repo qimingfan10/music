@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yu的小玩具</title>
+    <style>
+        /* 深色主题美化 */
+        :root {
+            --bg-color: #282c34;
+            --primary-text-color: #abb2bf;
+            --secondary-text-color: #828997;
+            --container-bg-color: #353a40;
+            --input-bg-color: #2c313a;
+            --input-border-color: #4f5660;
+            --button-bg-color: #61afef; /* 亮蓝色 */
+            --button-hover-bg-color: #5295cc;
+            --button-text-color: #282c34; /* 深色文字配亮按钮 */
+            --accent-color: #c678dd; /* 紫色点缀 */
+            --border-color: #4f5660;
+            --hover-bg-color: #3e444c;
+            --box-shadow-color: rgba(0, 0, 0, 0.3);
+            --link-color: #61afef;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-color);
+            color: var(--primary-text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            background-color: var(--container-bg-color);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px var(--box-shadow-color);
+            max-width: 800px;
+            margin: 20px auto;
+        }
+
+        h1, h2 {
+            color: #ffffff; /* 更亮的标题颜色 */
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        h1 { 
+            font-size: 2em; 
+            margin-bottom: 20px;
+            text-align: center; /* 居中标题 */
+        }
+        h2 { font-size: 1.5em; margin-bottom: 15px; margin-top: 30px;}
+
+
+        input[type="text"] {
+            padding: 12px 15px;
+            margin-right: 10px;
+            border: 1px solid var(--input-border-color);
+            border-radius: 6px;
+            background-color: var(--input-bg-color);
+            color: var(--primary-text-color);
+            width: calc(100% - 135px); /* 调整宽度以适应按钮 */
+            box-sizing: border-box;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--button-bg-color);
+            box-shadow: 0 0 0 2px rgba(97, 175, 239, 0.3);
+        }
+
+        button {
+            padding: 12px 20px;
+            background-color: var(--button-bg-color);
+            color: var(--button-text-color);
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: var(--button-hover-bg-color);
+        }
+        button:active {
+            transform: translateY(1px);
+        }
+
+        #qrCodeContainer {
+            display: none; /* 默认隐藏 */
+            justify-content: center;
+            align-items: center; /* 垂直居中二维码图片 */
+            margin-top: 15px;
+            background-color: white; /* 二维码背景通常是白色 */
+            padding: 10px;
+            border-radius: 6px;
+            min-height: 150px; /* 给一个最小高度避免闪烁或太小 */
+            max-width: 200px; /* 限制二维码容器大小 */
+            margin-left: auto; 
+            margin-right: auto; 
+        }
+        #qrCodeContainer img {
+            border: none;
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        #searchResults {
+            margin-top: 20px;
+        }
+        #searchResults ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .song-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            border-radius: 4px; 
+            margin-bottom: 5px; 
+        }
+        .song-item:hover {
+            background-color: var(--hover-bg-color);
+        }
+        .song-item:last-child {
+            border-bottom: none;
+        }
+
+        audio {
+            width: 100%;
+            margin-top: 20px;
+            border-radius: 6px; 
+        }
+
+        .status {
+            margin-top: 10px;
+            font-style: italic;
+            color: var(--secondary-text-color);
+            font-size: 0.95em;
+        }
+        #loginSection h2, #searchSection h2, #playerSection h2 {
+             margin-bottom: 10px;
+        }
+        #getQrCodeBtn {
+            margin-bottom: 15px;
+            background-color: var(--accent-color); 
+            color: white;
+        }
+        #getQrCodeBtn:hover {
+            background-color: #b068c0; 
+        }
+
+        .encryption-note {
+            font-size: 0.9em;
+            color: var(--secondary-text-color);
+            margin-top: 10px;
+            margin-bottom: 20px;
+            border-left: 3px solid var(--accent-color);
+            padding: 8px 12px;
+            background-color: var(--input-bg-color);
+            border-radius: 0 4px 4px 0;
+            line-height: 1.4;
+        }
+        .encryption-note code {
+            background-color: var(--bg-color);
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+        }
+        
+        hr {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 30px 0;
+        }
+
+        /* 简单的滚动条美化 (仅限 Webkit 浏览器) */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--input-bg-color);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--secondary-text-color);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-text-color);
+        }
+    </style>
+    <!-- 引入 CryptoJS CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js" integrity="sha512-a+SUDuwNzXDvz4XrIcXHuCf089/iJAoN4lmrXJg18XnduKK6YlDHNRalv4yd1N40OKI80tFidF+rqTFKGPoWFQ==" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>音乐播放器</h1>
+
+        <div id="loginSection">
+            <h2>检查状态</h2>
+            <button id="getQrCodeBtn" style="display: none;">获取登录二维码</button> <!-- 默认隐藏 -->
+            <div id="qrCodeContainer"></div>
+            <div id="loginStatus" class="status">正在初始化...</div>
+        </div>
+
+        <hr>
+
+        <div id="searchSection">
+            <h2>搜索音乐</h2>
+            <input type="text" id="searchInput" placeholder="输入歌曲名、歌手名...">
+            <button id="searchBtn">搜索</button>
+            <div id="searchResults"></div>
+        </div>
+
+        <hr>
+
+        <div id="playerSection">
+            <h2>播放器</h2>
+            <audio id="audioPlayer" controls></audio>
+            <div id="currentSong" class="status">当前未播放歌曲</div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://neteasecloudmusicapi.vercel.app';
+        
+        const SECRET_KEY = 'YourSecretKeyForCookieEncryption123!'; 
+
+        // ！！！重要：请将下面的 ENCRYPTED_USER_COOKIE 替换为您生成的加密Cookie字符串 ！！！
+        // 如果您不知道如何生成，请查看浏览器控制台的指引（当此占位符未被替换时会有提示）。
+        const ENCRYPTED_USER_COOKIE = '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'; 
+
+        let userCookie = null;
+        
+        function encryptCookieForSetup(plainCookie, key) {
+            if (typeof CryptoJS === 'undefined') {
+                console.error('CryptoJS 库未加载，无法加密。');
+                alert('加密功能初始化失败，请检查网络连接或联系管理员。');
+                return null;
+            }
+            try {
+                return CryptoJS.AES.encrypt(plainCookie, key).toString();
+            } catch (e) {
+                console.error('加密cookie时发生错误:', e);
+                return null;
+            }
+        }
+
+        // 解密函数
+        function decryptCookie(encryptedCookie, key) {
+            if (typeof CryptoJS === 'undefined') {
+                console.error('CryptoJS 库未加载，无法解密。');
+                return null;
+            }
+            
+            try {
+                const bytes = CryptoJS.AES.decrypt(encryptedCookie, key);
+                const originalText = bytes.toString(CryptoJS.enc.Utf8);
+                return originalText || null; 
+            } catch (e) {
+                console.error('解密cookie时发生错误:', e);
+                return null;
+            }
+        }
+
+        let qrKey = null;
+        let qrCheckInterval = null;
+
+        const getQrCodeBtn = document.getElementById('getQrCodeBtn');
+        const qrCodeContainer = document.getElementById('qrCodeContainer');
+        const loginStatusDiv = document.getElementById('loginStatus');
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const searchResultsDiv = document.getElementById('searchResults');
+        const audioPlayer = document.getElementById('audioPlayer');
+        const currentSongDiv = document.getElementById('currentSong');
+
+        // --- 登录功能 ---
+        getQrCodeBtn.addEventListener('click', async () => {
+            loginStatusDiv.textContent = '正在获取二维码...';
+            qrCodeContainer.innerHTML = ''; // 清空旧二维码
+            if (qrCheckInterval) clearInterval(qrCheckInterval);
+            userCookie = null; 
+
+            try {
+                const keyRes = await fetch(`${API_BASE_URL}/login/qr/key?timestamp=${Date.now()}`);
+                if (!keyRes.ok) throw new Error(`获取Key失败: ${keyRes.status}`);
+                const keyData = await keyRes.json();
+                if (keyData.code !== 200 || !keyData.data.unikey) {
+                     throw new Error(`获取Key API错误: ${keyData.message || '返回数据格式不正确'}`);
+                }
+                qrKey = keyData.data.unikey;
+
+                const qrImg = document.createElement('img');
+                const createRes = await fetch(`${API_BASE_URL}/login/qr/create?key=${qrKey}&qrimg=true&timestamp=${Date.now()}`);
+                if (!createRes.ok) throw new Error(`生成二维码失败: ${createRes.status}`);
+                const createData = await createRes.json();
+                 if (createData.code !== 200 || !createData.data.qrimg) {
+                    throw new Error(`生成二维码 API错误: ${createData.message || '返回数据格式不正确'}`);
+                }
+                qrImg.src = createData.data.qrimg;
+                qrCodeContainer.appendChild(qrImg);
+                qrCodeContainer.style.display = 'flex'; // 显示二维码容器
+                loginStatusDiv.textContent = '请使用网易云音乐APP扫描二维码';
+                qrCheckInterval = setInterval(checkQrStatus, 2000);
+            } catch (error) {
+                console.error('获取二维码失败:', error);
+                loginStatusDiv.textContent = `获取二维码失败: ${error.message}`;
+                qrCodeContainer.style.display = 'none'; 
+            }
+        });
+
+        async function checkQrStatus() {
+            if (!qrKey) return;
+            try {
+                const checkRes = await fetch(`${API_BASE_URL}/login/qr/check?key=${qrKey}&timestamp=${Date.now()}`);
+                if (!checkRes.ok) {
+                    loginStatusDiv.textContent = `检查状态失败: 服务器错误 ${checkRes.status}`;
+                    if (qrCheckInterval) clearInterval(qrCheckInterval);
+                    qrCodeContainer.style.display = 'none';
+                    return;
+                }
+                const checkData = await checkRes.json();
+                loginStatusDiv.textContent = `${checkData.message} (状态码: ${checkData.code})`;
+
+                if (checkData.code === 800) { // 二维码已过期
+                    if (qrCheckInterval) clearInterval(qrCheckInterval);
+                    loginStatusDiv.textContent = '二维码已过期，请重新获取。';
+                    getQrCodeBtn.style.display = 'inline-block';
+                    qrCodeContainer.innerHTML = '';
+                    qrCodeContainer.style.display = 'none';
+                } else if (checkData.code === 803) { // 扫码登录成功
+                    if (qrCheckInterval) clearInterval(qrCheckInterval);
+                    userCookie = checkData.cookie; 
+                    loginStatusDiv.textContent = '扫码登录成功！';
+                    getQrCodeBtn.style.display = 'none'; 
+                    qrCodeContainer.innerHTML = ''; 
+                    qrCodeContainer.style.display = 'none';
+                    console.log('扫码登录成功:', userCookie);
+                }
+            } catch (error) {
+                console.error('检查扫码状态失败:', error);
+                loginStatusDiv.textContent = `检查状态出错: ${error.message}`;
+                if (qrCheckInterval) clearInterval(qrCheckInterval); 
+                qrCodeContainer.style.display = 'none';
+            }
+        }
+
+        // --- 搜索功能 ---
+        searchBtn.addEventListener('click', async () => {
+            const query = searchInput.value.trim();
+            if (!query) {
+                alert('请输入搜索关键词！');
+                return;
+            }
+            if (!userCookie) {
+                alert('Cookie无效或未设置，请先登录或检查硬编码的Cookie。');
+                getQrCodeBtn.style.display = 'inline-block';
+                qrCodeContainer.style.display = 'none';
+                return;
+            }
+            searchResultsDiv.innerHTML = '正在搜索...';
+            try {
+                const searchApiUrl = `${API_BASE_URL}/cloudsearch?keywords=${encodeURIComponent(query)}&cookie=${encodeURIComponent(userCookie)}&timestamp=${Date.now()}`;
+                const res = await fetch(searchApiUrl);
+                if (!res.ok) throw new Error(`搜索失败: ${res.status}`);
+                const data = await res.json();
+                if (data.code === 200 && data.result && data.result.songs) {
+                    displaySearchResults(data.result.songs);
+                } else {
+                    searchResultsDiv.textContent = `搜索无结果或API错误: ${data.message || '未知错误'}`;
+                }
+            } catch (error) {
+                console.error('搜索失败:', error);
+                searchResultsDiv.textContent = `搜索失败: ${error.message}`;
+            }
+        });
+
+        function displaySearchResults(songs) {
+            searchResultsDiv.innerHTML = '';
+            if (songs.length === 0) {
+                searchResultsDiv.textContent = '没有找到相关歌曲。';
+                return;
+            }
+            const ul = document.createElement('ul');
+            songs.forEach(song => {
+                const li = document.createElement('li');
+                li.classList.add('song-item');
+                li.textContent = `${song.name} - ${song.ar.map(artist => artist.name).join('/')}`;
+                li.dataset.songId = song.id;
+                li.dataset.songName = `${song.name} - ${song.ar.map(artist => artist.name).join('/')}`;
+                li.addEventListener('click', () => playSong(song.id, li.dataset.songName));
+                ul.appendChild(li);
+            });
+            searchResultsDiv.appendChild(ul);
+        }
+
+        // --- 播放功能 ---
+        async function playSong(songId, songName) {
+            if (!userCookie) {
+                alert('Cookie无效或未设置，请先登录或检查硬编码的Cookie。');
+                getQrCodeBtn.style.display = 'inline-block';
+                qrCodeContainer.style.display = 'none';
+                return;
+            }
+            currentSongDiv.textContent = `正在加载: ${songName}...`;
+            try {
+                // 尝试添加 realIP 参数，看是否对VIP等有影响
+                const songUrlApi = `${API_BASE_URL}/song/url?id=${songId}&cookie=${encodeURIComponent(userCookie)}&timestamp=${Date.now()}&realIP=116.25.146.177`;
+                const res = await fetch(songUrlApi);
+                if (!res.ok) throw new Error(`获取歌曲URL失败: ${res.status}`);
+                const data = await res.json();
+                if (data.code === 200 && data.data && data.data.length > 0 && data.data[0].url) {
+                    audioPlayer.src = data.data[0].url;
+                    audioPlayer.play();
+                    currentSongDiv.textContent = `正在播放: ${songName}`;
+                } else {
+                    throw new Error(`无法获取播放链接: ${data.message || '歌曲可能无版权或需要VIP'}`);
+                }
+            } catch (error) {
+                console.error('播放失败:', error);
+                currentSongDiv.textContent = `播放失败: ${error.message}`;
+                alert(`播放失败: ${error.message}\n歌曲ID: ${songId}`);
+            }
+        }
+
+        // --- 初始化操作 ---
+        function initializeApp() {
+            const placeholderCookieValue = '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';
+            const decryptedCookie = decryptCookie(ENCRYPTED_USER_COOKIE, SECRET_KEY);
+
+            if (decryptedCookie && decryptedCookie.includes('MUSIC_U=')) {
+                userCookie = decryptedCookie;
+                loginStatusDiv.textContent = 'Cookie已加载，状态可用。';
+                getQrCodeBtn.style.display = 'none';
+                qrCodeContainer.style.display = 'none'; 
+                console.log('通过解密硬编码的Cookie成功加载。');
+            } else {
+                qrCodeContainer.style.display = 'none'; // 初始隐藏二维码容器
+                if (ENCRYPTED_USER_COOKIE === placeholderCookieValue) {
+                    loginStatusDiv.innerHTML = `
+                        <div class="encryption-note">
+                            <strong>注意:</strong> 您似乎正在使用占位符加密Cookie。
+                            请按照以下步骤操作：<br>
+                            1. 在浏览器控制台执行: <code>let myCookie = prompt("请输入您的网易云音乐Cookie字符串 (例如从浏览器开发者工具中获取):"); console.log(encryptCookieForSetup(myCookie, "${SECRET_KEY}"));</code><br>
+                            2. 复制控制台输出的加密字符串。<br>
+                            3. 将本HTML文件中的 <code>ENCRYPTED_USER_COOKIE</code> 的值替换为您复制的加密字符串。<br>
+                            4. 刷新页面。<br>
+                            如果操作正确但仍有问题，可尝试下方按钮获取二维码登录。
+                        </div>
+                    `;
+                     console.warn('检测到占位符 ENCRYPTED_USER_COOKIE，请用户替换为真实的加密Cookie。');
+                } else {
+                     loginStatusDiv.textContent = '解密Cookie失败或Cookie无效。请检查控制台错误，或尝试重新获取二维码登录。';
+                     console.warn('硬编码的Cookie解密失败或格式不正确。ENCRYPTED_USER_COOKIE 的值可能已损坏或密钥不匹配。');
+                }
+                getQrCodeBtn.style.display = 'inline-block';
+            }
+        }
+
+        initializeApp();
+
+    </script>
+</body>
+</html>
