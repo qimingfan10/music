@@ -438,7 +438,7 @@
 
             if (decryptedCookie && decryptedCookie.includes('MUSIC_U=')) {
                 userCookie = decryptedCookie;
-                loginStatusDiv.textContent = 'Cookie已加载，状态可用。';
+                loginStatusDiv.textContent = '状态可用。';
                 getQrCodeBtn.style.display = 'none';
                 qrCodeContainer.style.display = 'none'; 
                 console.log('通过解密硬编码的Cookie成功加载。');
